@@ -123,26 +123,26 @@ class AppointmentServiceImplTest {
     @Test
     @DisplayName("예약 취소 성공")
     void cancelAppointment_success_whenStatusIsRequested() {
-        Appointment reservation = createAppointment(10L, AppointmentStatus.REQUESTED, LocalDateTime.now().plusDays(1));
-        LocalDateTime beforeCancelUpdateTime = reservation.getUpdatedAt();
+        Appointment appointment = createAppointment(10L, AppointmentStatus.REQUESTED, LocalDateTime.now().plusDays(1));
+        LocalDateTime beforeCancelUpdateTime = appointment.getUpdatedAt();
 
-        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(reservation));
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(appointment));
         when(appointmentRepository.save(any(Appointment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         AppointmentResponse response = appointmentService.cancelAppointment(10L);
 
         assertEquals("CANCELED", response.status());
-        assertEquals(AppointmentStatus.CANCELED, reservation.getStatus());
-        assertNotNull(reservation.getCancelReason());
-        assertTrue(reservation.getUpdatedAt().isAfter(beforeCancelUpdateTime));
-        verify(appointmentRepository).save(reservation);
+        assertEquals(AppointmentStatus.CANCELED, appointment.getStatus());
+        assertNotNull(appointment.getCancelReason());
+        assertTrue(appointment.getUpdatedAt().isAfter(beforeCancelUpdateTime));
+        verify(appointmentRepository).save(appointment);
     }
 
     @ParameterizedTest(name = "예약 취소 실패: {0} 상태")
     @MethodSource("nonCancelableStatuses")
     void cancelAppointment_fail_whenStatusIsFinalized(AppointmentStatus finalizedStatus) {
-        Appointment reservation = createAppointment(20L, finalizedStatus, LocalDateTime.now().plusDays(1));
-        when(appointmentRepository.findById(20L)).thenReturn(Optional.of(reservation));
+        Appointment appointment = createAppointment(20L, finalizedStatus, LocalDateTime.now().plusDays(1));
+        when(appointmentRepository.findById(20L)).thenReturn(Optional.of(appointment));
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
@@ -161,18 +161,18 @@ class AppointmentServiceImplTest {
     }
 
     private Appointment createAppointment(Long id, AppointmentStatus status, LocalDateTime appointmentTime) {
-        Appointment reservation = new Appointment();
-        ReflectionTestUtils.setField(reservation, "id", id);
-        reservation.setAppointmentNumber("RSV-TEST-" + id);
-        reservation.setPatientName("테스트");
-        reservation.setCustomerPhone("010-0000-0000");
-        reservation.setCustomerEmail("test@example.com");
-        reservation.setAppointmentTime(appointmentTime);
-        reservation.setPartySize(2);
-        reservation.setStatus(status);
-        reservation.setCancelReason(null);
-        reservation.setCreatedAt(LocalDateTime.now().minusHours(2));
-        reservation.setUpdatedAt(LocalDateTime.now().minusHours(1));
-        return reservation;
+        Appointment appointment = new Appointment();
+        ReflectionTestUtils.setField(appointment, "id", id);
+        appointment.setAppointmentNumber("RSV-TEST-" + id);
+        appointment.setPatientName("테스트");
+        appointment.setCustomerPhone("010-0000-0000");
+        appointment.setCustomerEmail("test@example.com");
+        appointment.setAppointmentTime(appointmentTime);
+        appointment.setPartySize(2);
+        appointment.setStatus(status);
+        appointment.setCancelReason(null);
+        appointment.setCreatedAt(LocalDateTime.now().minusHours(2));
+        appointment.setUpdatedAt(LocalDateTime.now().minusHours(1));
+        return appointment;
     }
 }

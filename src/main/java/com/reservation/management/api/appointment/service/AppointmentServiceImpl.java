@@ -47,30 +47,30 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalStateException("동일 시간대에 이미 활성 예약이 존재합니다.");
         }
 
-        Appointment reservation = new Appointment();
-        reservation.setAppointmentNumber(generateAppointmentNumber());
-        reservation.setPatientName(request.patientName().trim());
-        reservation.setCustomerPhone("UNKNOWN");
-        reservation.setCustomerEmail(null);
-        reservation.setAppointmentTime(appointmentTime);
-        reservation.setPartySize(request.partySize());
-        reservation.setStatus(AppointmentStatus.REQUESTED);
-        reservation.setCancelReason(null);
+        Appointment appointment = new Appointment();
+        appointment.setAppointmentNumber(generateAppointmentNumber());
+        appointment.setPatientName(request.patientName().trim());
+        appointment.setCustomerPhone("UNKNOWN");
+        appointment.setCustomerEmail(null);
+        appointment.setAppointmentTime(appointmentTime);
+        appointment.setPartySize(request.partySize());
+        appointment.setStatus(AppointmentStatus.REQUESTED);
+        appointment.setCancelReason(null);
 
         LocalDateTime now = LocalDateTime.now();
-        reservation.setCreatedAt(now);
-        reservation.setUpdatedAt(now);
+        appointment.setCreatedAt(now);
+        appointment.setUpdatedAt(now);
 
-        Appointment saved = appointmentRepository.save(reservation);
+        Appointment saved = appointmentRepository.save(appointment);
         return toResponse(saved);
     }
 
     @Override
     @Transactional(readOnly = true)
     public AppointmentResponse getAppointment(Long appointmentId) {
-        Appointment reservation = appointmentRepository.findById(appointmentId)
+        Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다. id=" + appointmentId));
-        return toResponse(reservation);
+        return toResponse(appointment);
     }
 
     @Override
@@ -83,10 +83,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentResponse cancelAppointment(Long appointmentId) {
-        Appointment reservation = appointmentRepository.findById(appointmentId)
+        Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new NoSuchElementException("예약을 찾을 수 없습니다. id=" + appointmentId));
 
-        AppointmentStatus currentStatus = reservation.getStatus();
+        AppointmentStatus currentStatus = appointment.getStatus();
 
         if (CANNOT_CANCEL_STATUSES.contains(currentStatus)) {
             throw new IllegalStateException("이미 종결된 예약은 취소할 수 없습니다. status=" + currentStatus);
@@ -96,11 +96,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalStateException("현재 상태에서는 취소할 수 없습니다. status=" + currentStatus);
         }
 
-        reservation.setStatus(AppointmentStatus.CANCELED);
-        reservation.setCancelReason(DEFAULT_CANCEL_REASON);
-        reservation.setUpdatedAt(LocalDateTime.now());
+        appointment.setStatus(AppointmentStatus.CANCELED);
+        appointment.setCancelReason(DEFAULT_CANCEL_REASON);
+        appointment.setUpdatedAt(LocalDateTime.now());
 
-        Appointment saved = appointmentRepository.save(reservation);
+        Appointment saved = appointmentRepository.save(appointment);
         return toResponse(saved);
     }
 
@@ -134,13 +134,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         return "RSV-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
 
-    private AppointmentResponse toResponse(Appointment reservation) {
+    private AppointmentResponse toResponse(Appointment appointment) {
         return new AppointmentResponse(
-                reservation.getId(),
-                reservation.getPatientName(),
-                reservation.getAppointmentTime().toString(),
-                reservation.getPartySize(),
-                reservation.getStatus().name()
+                appointment.getId(),
+                appointment.getPatientName(),
+                appointment.getAppointmentTime().toString(),
+                appointment.getPartySize(),
+                appointment.getStatus().name()
         );
     }
 }
