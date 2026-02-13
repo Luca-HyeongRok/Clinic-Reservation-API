@@ -1,11 +1,11 @@
-package com.reservation.management.api.reservation.dto;
+package com.reservation.management.api.appointment.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public record ReservationCreateRequest(
-        String customerName,
-        String reservedAt,
+public record AppointmentCreateRequest(
+        String patientName,
+        String appointmentTime,
         @NotNull
         @Min(1)
         Integer partySize

@@ -1,4 +1,4 @@
-package com.reservation.management.api.reservation.domain;
+package com.reservation.management.api.appointment.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,18 +12,18 @@ import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reservations")
-public class Reservation {
+@Table(name = "appointments")
+public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String reservationNumber;
+    private String appointmentNumber;
 
     @Column(nullable = false, length = 100)
-    private String customerName;
+    private String patientName;
 
     @Column(nullable = false, length = 20)
     private String customerPhone;
@@ -32,14 +32,14 @@ public class Reservation {
     private String customerEmail;
 
     @Column(nullable = false)
-    private LocalDateTime reservedAt;
+    private LocalDateTime appointmentTime;
 
     @Column(nullable = false)
     private int partySize;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private ReservationStatus status;
+    private AppointmentStatus status;
 
     @Column(length = 500)
     private String cancelReason;
@@ -54,27 +54,27 @@ public class Reservation {
     @Column(nullable = false)
     private Long version;
 
-    public Reservation() {
+    public Appointment() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getReservationNumber() {
-        return reservationNumber;
+    public String getAppointmentNumber() {
+        return appointmentNumber;
     }
 
-    public void setReservationNumber(String reservationNumber) {
-        this.reservationNumber = reservationNumber;
+    public void setAppointmentNumber(String appointmentNumber) {
+        this.appointmentNumber = appointmentNumber;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getPatientName() {
+        return patientName;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setPatientName(String patientName) {
+        this.patientName = patientName;
     }
 
     public String getCustomerPhone() {
@@ -93,12 +93,12 @@ public class Reservation {
         this.customerEmail = customerEmail;
     }
 
-    public LocalDateTime getReservedAt() {
-        return reservedAt;
+    public LocalDateTime getAppointmentTime() {
+        return appointmentTime;
     }
 
-    public void setReservedAt(LocalDateTime reservedAt) {
-        this.reservedAt = reservedAt;
+    public void setAppointmentTime(LocalDateTime appointmentTime) {
+        this.appointmentTime = appointmentTime;
     }
 
     public int getPartySize() {
@@ -109,11 +109,11 @@ public class Reservation {
         this.partySize = partySize;
     }
 
-    public ReservationStatus getStatus() {
+    public AppointmentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ReservationStatus status) {
+    public void setStatus(AppointmentStatus status) {
         this.status = status;
     }
 
