@@ -8,6 +8,9 @@ public record AppointmentCreateRequest(
         String appointmentTime,
         @NotNull
         @Min(1)
+        Long doctorId,
+        @NotNull
+        @Min(1)
         Integer partySize
 ) {
 }

@@ -42,7 +42,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalArgumentException("예약 시간은 현재 시각 이후여야 합니다.");
         }
 
-        boolean duplicated = appointmentRepository.existsByAppointmentTimeAndStatusIn(appointmentTime, ACTIVE_STATUSES);
+        boolean duplicated = appointmentRepository.existsByDoctorIdAndAppointmentTimeAndStatusIn(
+                request.doctorId(),
+                appointmentTime,
+                ACTIVE_STATUSES
+        );
         if (duplicated) {
             throw new IllegalStateException("동일 시간대에 이미 활성 예약이 존재합니다.");
         }
@@ -53,6 +57,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setCustomerPhone("UNKNOWN");
         appointment.setCustomerEmail(null);
         appointment.setAppointmentTime(appointmentTime);
+        appointment.setDoctorId(request.doctorId());
         appointment.setPartySize(request.partySize());
         appointment.setStatus(AppointmentStatus.REQUESTED);
         appointment.setCancelReason(null);
@@ -115,6 +120,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         if (request.appointmentTime() == null || request.appointmentTime().trim().isEmpty()) {
             throw new IllegalArgumentException("예약 시간은 필수입니다.");
+        }
+
+        if (request.doctorId() == null || request.doctorId() < 1) {
+            throw new IllegalArgumentException("doctorId is required.");
         }
 
         if (request.partySize() == null || request.partySize() < 1) {

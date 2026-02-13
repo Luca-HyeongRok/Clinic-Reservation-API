@@ -35,6 +35,9 @@ public class Appointment {
     private LocalDateTime appointmentTime;
 
     @Column(nullable = false)
+    private Long doctorId;
+
+    @Column(nullable = false)
     private int partySize;
 
     @Enumerated(EnumType.STRING)
@@ -99,6 +102,14 @@ public class Appointment {
 
     public void setAppointmentTime(LocalDateTime appointmentTime) {
         this.appointmentTime = appointmentTime;
+    }
+
+    public Long getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Long doctorId) {
+        this.doctorId = doctorId;
     }
 
     public int getPartySize() {

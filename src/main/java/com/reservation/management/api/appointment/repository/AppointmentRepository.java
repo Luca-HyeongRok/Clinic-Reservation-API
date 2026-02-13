@@ -26,7 +26,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     /**
      * 예약 시각에 활성 상태 예약이 존재하는지 확인해 중복 슬롯 차단 규칙을 지원합니다.
      */
-    boolean existsByAppointmentTimeAndStatusIn(LocalDateTime appointmentTime, Collection<AppointmentStatus> statuses);
+    boolean existsByDoctorIdAndAppointmentTimeAndStatusIn(
+            Long doctorId,
+            LocalDateTime appointmentTime,
+            Collection<AppointmentStatus> statuses
+    );
 
     /**
      * 기간 기반 예약 조회로 운영 일정 확인 및 일자별 관리 규칙을 지원합니다.

@@ -47,9 +47,10 @@ class AppointmentServiceImplTest {
     @DisplayName("예약 생성 성공")
     void createAppointment_success_savesAsRequested() {
         LocalDateTime futureTime = LocalDateTime.now().plusDays(1);
-        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", futureTime.toString(), 2);
+        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", futureTime.toString(), 1L, 2);
 
-        when(appointmentRepository.existsByAppointmentTimeAndStatusIn(
+        when(appointmentRepository.existsByDoctorIdAndAppointmentTimeAndStatusIn(
+                eq(1L),
                 eq(futureTime),
                 eq(EnumSet.of(AppointmentStatus.REQUESTED, AppointmentStatus.CONFIRMED))
         )).thenReturn(false);
@@ -73,7 +74,7 @@ class AppointmentServiceImplTest {
     @DisplayName("예약 생성 실패: 과거 시간")
     void createAppointment_fail_whenAppointmentTimeIsPast() {
         LocalDateTime pastTime = LocalDateTime.now().minusMinutes(1);
-        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", pastTime.toString(), 2);
+        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", pastTime.toString(), 1L, 2);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -81,7 +82,7 @@ class AppointmentServiceImplTest {
         );
 
         assertTrue(exception.getMessage().contains("예약 시간"));
-        verify(appointmentRepository, never()).existsByAppointmentTimeAndStatusIn(any(), any());
+        verify(appointmentRepository, never()).existsByDoctorIdAndAppointmentTimeAndStatusIn(any(), any(), any());
         verify(appointmentRepository, never()).save(any());
     }
 
@@ -89,9 +90,10 @@ class AppointmentServiceImplTest {
     @DisplayName("예약 생성 실패: 동일 시간 중복")
     void createAppointment_fail_whenActiveAppointmentExistsAtSameTime() {
         LocalDateTime futureTime = LocalDateTime.now().plusHours(3);
-        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", futureTime.toString(), 2);
+        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", futureTime.toString(), 1L, 2);
 
-        when(appointmentRepository.existsByAppointmentTimeAndStatusIn(
+        when(appointmentRepository.existsByDoctorIdAndAppointmentTimeAndStatusIn(
+                eq(1L),
                 eq(futureTime),
                 eq(EnumSet.of(AppointmentStatus.REQUESTED, AppointmentStatus.CONFIRMED))
         )).thenReturn(true);
@@ -109,7 +111,7 @@ class AppointmentServiceImplTest {
     @DisplayName("예약 생성 실패: partySize가 1 미만")
     void createAppointment_fail_whenPartySizeLessThanOne() {
         LocalDateTime futureTime = LocalDateTime.now().plusHours(3);
-        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", futureTime.toString(), 0);
+        AppointmentCreateRequest request = new AppointmentCreateRequest("홍길동", futureTime.toString(), 1L, 0);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -168,6 +170,7 @@ class AppointmentServiceImplTest {
         appointment.setCustomerPhone("010-0000-0000");
         appointment.setCustomerEmail("test@example.com");
         appointment.setAppointmentTime(appointmentTime);
+        appointment.setDoctorId(1L);
         appointment.setPartySize(2);
         appointment.setStatus(status);
         appointment.setCancelReason(null);
